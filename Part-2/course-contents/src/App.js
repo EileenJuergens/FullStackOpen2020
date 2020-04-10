@@ -1,5 +1,12 @@
 import React from 'react';
 
+const Total = ({ parts }) => {
+
+  return <b>Number of exercises {parts[0].exercises 
+    + parts[1].exercises 
+    + parts[2].exercises
+    + parts[3].exercises}</b>;
+}
 
 const Part = ({ name, number }) => {
 
@@ -14,6 +21,7 @@ const Content = ({ parts }) => {
       <Part name={parts[0].name} number={parts[0].exercises} />
       <Part name={parts[1].name} number={parts[1].exercises} />
       <Part name={parts[2].name} number={parts[2].exercises} />
+      <Part name={parts[3].name} number={parts[3].exercises} />
     </>
   );
 }
@@ -31,6 +39,7 @@ const Course = ({ course }) => {
     <>
       <Header name={course.name} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </>
   )
 }
@@ -55,6 +64,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
