@@ -2,10 +2,10 @@ import React from 'react';
 
 const Total = ({ parts }) => {
 
-  return <b>Number of exercises {parts[0].exercises 
-    + parts[1].exercises 
-    + parts[2].exercises
-    + parts[3].exercises}</b>;
+  const reducer = (acc, curr) => acc + curr;
+  const totalValue = parts.map(el => el.exercises).reduce(reducer)
+
+  return <b>Number of exercises {totalValue}</b>;
 }
 
 const Part = ({ name, number }) => {
