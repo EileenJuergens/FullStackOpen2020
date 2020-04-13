@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 
-const CountryList = ({ searchResults }) => {
-  return searchResults.map(country => <li key={country.numericCode}>{country.name}</li>)
+
+const CountryList = ({ searchResults, handleShowCountry }) => {
+
+  return searchResults.map(country =>
+    <li key={country.numericCode}>
+      {country.name} <button onClick={() => handleShowCountry(country)}>show</button>
+    </li>)
 }
 
-const Country = ({ searchResults }) => {
-  const country = searchResults[0]
+
+const Country = ({ country }) => {
 
   return (
     <>
@@ -15,16 +20,18 @@ const Country = ({ searchResults }) => {
       <p>Population {country.population}</p>
       <h3>Languages</h3>
       {country.languages.map(language => <li key={language.iso639_1}>{language.name}</li>)}
-      <br/>
+      <br />
       <img src={country.flag} alt={country.name} style={{ width: '150px' }} />
     </>
   )
 }
 
+
 function App() {
   const [countries, setCountries] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
+
 
   useEffect(() => {
     axios
@@ -40,7 +47,6 @@ function App() {
       ? setSearchResults(countries.filter(country =>
         country.name.toLowerCase().includes(searchTerm.toLowerCase())))
       : setSearchResults([])
-
   }, [searchTerm, countries])
 
 
@@ -48,15 +54,21 @@ function App() {
     setSearchTerm(event.target.value)
   }
 
+
+  const handleShowCountry = (clickedCountry) => {
+    setSearchResults([clickedCountry])
+  }
+
   const showContent = () => {
     if (searchResults.length > 10) return <p>Too many matches, specify another filter</p>
-    if (searchResults.length === 1) return <Country searchResults={searchResults} />
+    if (searchResults.length === 1) {
+      return <Country country={searchResults[0]} />
+    }
     if (searchResults.length > 1 && searchResults.length <= 10) {
-      return <CountryList searchResults={searchResults} />
+      return <CountryList searchResults={searchResults} handleShowCountry={handleShowCountry}/>
     }
   }
 
-  console.log(searchResults)
 
   return (
     <div>
