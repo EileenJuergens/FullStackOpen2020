@@ -11,7 +11,7 @@ const CountryList = ({ searchResults, handleShowCountry }) => {
 }
 
 
-const Country = ({ country }) => {
+const Country = ({ country, weather }) => {
 
   return (
     <>
@@ -22,6 +22,10 @@ const Country = ({ country }) => {
       {country.languages.map(language => <li key={language.iso639_1}>{language.name}</li>)}
       <br />
       <img src={country.flag} alt={country.name} style={{ width: '150px' }} />
+      <h2>Weather in {country.capital}</h2>
+      <p>Temperature: {weather.temperature}</p>
+      <img src={weather.weather_icons} alt={weather.weather_icons} style={{ width: '50px' }} />
+      <p>Wind: {weather.wind_speed} kph direction {weather.wind_dir}</p>
     </>
   )
 }
@@ -31,6 +35,7 @@ function App() {
   const [countries, setCountries] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [weather, setWeather] = useState({})
 
 
   useEffect(() => {
@@ -50,6 +55,16 @@ function App() {
   }, [searchTerm, countries])
 
 
+  useEffect(() => {
+    const API_KEY = '...'
+    if (searchResults.length === 1) {
+      axios
+        .get(`http://api.weatherstack.com/current?access_key=${API_KEY}&query=${searchResults[0].capital}`)
+        .then(response => setWeather(response.data.current))
+    }
+  }, [searchResults])
+
+
   const handleFilterChange = (event) => {
     setSearchTerm(event.target.value)
   }
@@ -62,10 +77,10 @@ function App() {
   const showContent = () => {
     if (searchResults.length > 10) return <p>Too many matches, specify another filter</p>
     if (searchResults.length === 1) {
-      return <Country country={searchResults[0]} />
+      return <Country country={searchResults[0]} weather={weather} />
     }
     if (searchResults.length > 1 && searchResults.length <= 10) {
-      return <CountryList searchResults={searchResults} handleShowCountry={handleShowCountry}/>
+      return <CountryList searchResults={searchResults} handleShowCountry={handleShowCountry} />
     }
   }
 
