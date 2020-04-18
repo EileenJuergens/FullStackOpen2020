@@ -1,40 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-
-
-const Filter = ({ searchTerm, handleFilterChange }) => {
-  return (
-    <>
-      filter shown with: <input value={searchTerm} onChange={handleFilterChange} />
-    </>
-  )
-}
-
-
-const PersonForm = ({ addPerson, newName, newNumber, handleNameChange, handleNumberChange }) => {
-  return (
-    <form onSubmit={addPerson}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} /><br />
-          number: <input value={newNumber} onChange={handleNumberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
-
-
-const Persons = ({ searchResults, persons }) => {
-  return (
-    <ul>
-      {searchResults.length
-        ? searchResults.map(person => <li key={person.name}>{person.name} {person.number}</li>)
-        : persons.map(person => <li key={person.name}>{person.name} {person.number}</li>)}
-    </ul>
-  )
-}
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 
 const App = () => {
@@ -62,6 +30,7 @@ const App = () => {
 
   }, [searchTerm, persons])
 
+
   const addPerson = event => {
     event.preventDefault()
     const personObject = {
@@ -73,9 +42,15 @@ const App = () => {
     dobbledName
       ? alert(`${newName} is already added to phonebook`)
       : setPersons(persons.concat(personObject))
+  
+    axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
 
-    setNewName('')
-    setNewNumber('')
+      })
   }
 
   const handleFilterChange = event => {
@@ -105,7 +80,7 @@ const App = () => {
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons 
+      <Persons
         searchResults={searchResults}
         persons={persons} />
     </div>
