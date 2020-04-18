@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import PersonList from './components/PersonList'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -43,13 +42,26 @@ const App = () => {
       : setPersons(persons.concat(personObject))
 
     personService
-      .create(personObject)
+      .createOne(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
   }
+
+
+  const deletePerson = (id, name) => {
+    const confirmed = window.confirm(`Do you want to delete ${name}?`)
+    if(confirmed) {
+      personService
+        .deleteOne(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
 
   const handleFilterChange = event => {
     setSearchTerm(event.target.value)
@@ -78,9 +90,10 @@ const App = () => {
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons
+      <PersonList
         searchResults={searchResults}
-        persons={persons} />
+        persons={persons}
+        deletePerson={deletePerson} />
     </div>
   )
 }
