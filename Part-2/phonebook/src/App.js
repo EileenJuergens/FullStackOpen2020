@@ -13,6 +13,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [infoMessage, setInfoMessage] = useState(null)
+  const [error, setError] = useState(false);
 
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const App = () => {
 
   const addPerson = event => {
     event.preventDefault()
-   
+
     const personObject = {
       name: newName,
       number: newNumber,
@@ -68,6 +69,15 @@ const App = () => {
             setPersons(persons.map(person => person.id === data.id ? data : person))
             setNewName('');
             setNewNumber('');
+          })
+          .catch(() => {
+            setError(true)
+            setInfoMessage(`${personObject.name} was already deleted from server`)
+            setPersons(persons.filter(person => person.id !== dobbledPersonNumber.id))
+            setTimeout(() => {
+              setInfoMessage(null)
+              setError(false)
+            }, 3000)
           })
       }
     }
@@ -118,7 +128,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={infoMessage}/>
+      <Notification message={infoMessage} error={error} />
       <Filter
         searchTerm={searchTerm}
         handleFilterChange={handleFilterChange} />
