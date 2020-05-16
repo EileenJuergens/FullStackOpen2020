@@ -37,34 +37,31 @@ const App = () => {
 
     const personObject = {
       name: newName,
-      number: newNumber,
-      id: newName
+      number: newNumber
     }
 
-    const dobbledPerson = persons.find(person => (
+    const doubledPerson = persons.find(person => (
       person.name.toLowerCase() === newName.toLowerCase() && person.number === newNumber
     ))
 
-    const dobbledPersonNumber = persons.find(person => (
+    const doubledPersonNumber = persons.find(person => (
       person.name.toLowerCase() === newName.toLowerCase() && person.number !== newNumber
     ))
 
-    // case if person exsist already 
-    if (dobbledPerson) {
-      alert(`${dobbledPerson.name} is already added to phonebook`)
+    // case if person exists already 
+    if (doubledPerson) {
+      alert(`${doubledPerson.name} is already added to phonebook`)
     }
 
     // case if number from person should be updated
-    else if (dobbledPersonNumber) {
-      const message = `${dobbledPersonNumber.name} is already in the phonebook, do you want to replace the old number with the new one?`
+    else if (doubledPersonNumber) {
+      const message = `${doubledPersonNumber.name} is already in the phonebook, do you want to replace the old number with the new one?`
       const confirmed = window.confirm(message);
 
       if (confirmed) {
+        const changedPerson = {...doubledPersonNumber, number: newNumber }
         personService
-          .updateOne(dobbledPersonNumber.id, {
-            name: dobbledPersonNumber.name,
-            number: newNumber
-          })
+          .updateOne(doubledPersonNumber.id, changedPerson)
           .then((data) => {
             setPersons(persons.map(person => person.id === data.id ? data : person))
             setNewName('');
@@ -73,12 +70,15 @@ const App = () => {
           .catch(() => {
             setError(true)
             setInfoMessage(`${personObject.name} was already deleted from server`)
-            setPersons(persons.filter(person => person.id !== dobbledPersonNumber.id))
+            setPersons(persons.filter(person => person.id !== doubledPersonNumber.id))
             setTimeout(() => {
               setInfoMessage(null)
               setError(false)
             }, 3000)
           })
+      } else {
+        setNewName('');
+        setNewNumber('');
       }
     }
 
