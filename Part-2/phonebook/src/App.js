@@ -59,7 +59,7 @@ const App = () => {
       const confirmed = window.confirm(message);
 
       if (confirmed) {
-        const changedPerson = {...doubledPersonNumber, number: newNumber }
+        const changedPerson = { ...doubledPersonNumber, number: newNumber }
         personService
           .updateOne(doubledPersonNumber.id, changedPerson)
           .then((data) => {
@@ -67,18 +67,29 @@ const App = () => {
             setNewName('');
             setNewNumber('');
           })
-          .catch(() => {
-            setError(true)
-            setInfoMessage(`${personObject.name} was already deleted from server`)
-            setPersons(persons.filter(person => person.id !== doubledPersonNumber.id))
-            setTimeout(() => {
-              setInfoMessage(null)
-              setError(false)
-            }, 3000)
+          .catch((error) => {
+            if (error) {
+              setError(true)
+              setInfoMessage(`${error.response.data.error}`)
+              setTimeout(() => {
+                setInfoMessage(null)
+                setError(false)
+              }, 5000)
+              setNewName('')
+              setNewNumber('')
+            } else {
+              setError(true)
+              setInfoMessage(`${personObject.name} was already deleted from server`)
+              setPersons(persons.filter(person => person.id !== doubledPersonNumber.id))
+              setTimeout(() => {
+                setInfoMessage(null)
+                setError(false)
+              }, 5000)
+            }
           })
       } else {
-        setNewName('');
-        setNewNumber('');
+        setNewName('')
+        setNewNumber('')
       }
     }
 
@@ -93,7 +104,7 @@ const App = () => {
           setInfoMessage(`Added ${personObject.name}`)
           setTimeout(() => {
             setInfoMessage(null)
-          }, 3000)
+          }, 5000)
         })
         .catch(error => {
           setError(true)
@@ -102,8 +113,8 @@ const App = () => {
             setInfoMessage(null)
             setError(false)
           }, 5000)
-          setNewName('');
-          setNewNumber('');
+          setNewName('')
+          setNewNumber('')
         })
     }
   }
