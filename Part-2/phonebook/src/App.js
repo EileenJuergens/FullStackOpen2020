@@ -95,6 +95,16 @@ const App = () => {
             setInfoMessage(null)
           }, 3000)
         })
+        .catch(error => {
+          setError(true)
+          setInfoMessage(`${error.response.data.error}`)
+          setTimeout(() => {
+            setInfoMessage(null)
+            setError(false)
+          }, 5000)
+          setNewName('');
+          setNewNumber('');
+        })
     }
   }
 
